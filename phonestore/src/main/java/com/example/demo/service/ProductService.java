@@ -10,11 +10,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductService {
 
     @Autowired
     ProductDAO productDAO;
+
+    public List<Product> findAll(){
+       return productDAO.findAll();
+    }
 
     public Page<Product> listAll(int pageNum, String sortField, String sortDir) {
 
@@ -35,7 +41,8 @@ public class ProductService {
     }
 
     public Product saveProductForm(ProductForm productForm) {
-        Product product = null;
+        Product product = findProductById(productForm.getId());
+        if(product==null){product = new Product();};
         product.setId(productForm.getId());
         product.setName(productForm.getName());
         product.setPrice(productForm.getPrice());

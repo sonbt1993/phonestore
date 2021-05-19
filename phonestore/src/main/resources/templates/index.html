@@ -1,24 +1,140 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Books Shop Online</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}" />
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
 </head>
 <body>
 <th:block th:include="/_header"></th:block>
 <th:block th:include="/_menu"></th:block>
+<!--<div class="page-title">Product List</div>-->
+<div align="center">
+    <th:block sec:authorize="hasAuthority('ROLE_MANAGER')">
+    <h1>Product Manager</h1>
+    <a th:href="@{/admin/createProduct}">Create New Product</a>
+    </th:block>
+    <br/><br/>
 
-<div class="page-title">Shopping Cart Demo</div>
-<div class="demo-container">
-    <h3>Demo content</h3>
-    <ul>
-        <li>Buy online</li>
-        <li>Admin pages</li>
-        <li>Reports</li>
-    </ul>
+    <table border="1" cellpadding="10">
+        <thead>
+        <tr>
+            <th>
+                <a th:href="@{'/productList/' + ${currentPage} + '?sortField=id&sortDir=' + ${reverseSortDir}}">Product ID</a>
+            </th>
+            <th>
+                <a th:href="@{'/productList/' + ${currentPage} + '?sortField=name&sortDir=' + ${reverseSortDir}}">Name</a>
+            </th>
+            <th>
+                <a th:href="@{'/productList/' + ${currentPage} + '?sortField=price&sortDir=' + ${reverseSortDir}}">Price</a>
+            </th>
+            <th>Image</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${listProducts}">
+            <td style=" text-align: center;" th:text="${product.id}">Product ID</td>
+            <td th:text="${product.name}">Name</td>
+            <td th:text="${product.price}">Price</td>
+            <td><img class="product-image"
+                     th:src="@{|/productImage?id=${product.id}|}" /></td>
+            <td>
+                <th:block sec:authorize="hasAuthority('ROLE_MANAGER')">
+                <a  th:href="@{/admin/editProduct(id = ${product.id})}">Edit</a>
+                <a  th:href="@{/admin/deleteProduct(id = ${product.id})}">Delete</a>
+                </th:block>
+                <a th:href="@{|/buyProduct?id=${product.id}|}">Buy Now</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div>&nbsp;</div>
+    <div><i>Sorted by [[${sortField}]] in [[${sortDir}]] order</i></div>
+    <div>&nbsp;</div>
+    <div class="page-navigator" th:if="${totalPages > 1}">
+        Total Items: [[${totalItems}]]
+        &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+
+        <a class="nav-item" th:if="${currentPage > 1}" th:href="@{'/productList/1' + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">First</a>
+        <span class="nav-item" th:unless="${currentPage > 1}">First</span>
+        &nbsp;&nbsp;
+
+        <a class="nav-item" th:if="${currentPage > 1}" th:href="@{'/productList/' + ${currentPage - 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Previous</a>
+        <span class="nav-item" th:unless="${currentPage > 1}">Previous</span>
+
+        &nbsp;&nbsp;
+
+        <span class="nav-item" th:each="i: ${#numbers.sequence(1, totalPages)}">
+			<a class="nav-item" th:if="${currentPage != i}" th:href="@{'/productList/' + ${i} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
+			<span class="nav-item" th:unless="${currentPage != i}">[[${i}]]</span>
+			&nbsp;
+		</span>
+
+        <a class="nav-item" th:if="${currentPage < totalPages}" th:href="@{'/productList/' + ${currentPage + 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
+        <span class="nav-item" th:unless="${currentPage < totalPages}">Next</span>
+        &nbsp;&nbsp;
+
+        <a class="nav-item" th:if="${currentPage < totalPages}" th:href="@{'/productList/' + ${totalPages} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
+        <span class="nav-item" th:unless="${currentPage < totalPages}">Last</span>
+    </div>
+
+    <div class="page-title">Product List</div>
+
+    <div class="product-preview-container" th:each="product : ${listProducts}">
+        <ul>
+            <li><img class="product-image"
+                     th:src="@{|/productImage?id=${product.id}|}" /></li>
+            <li>Id: <span th:utext="${product.id}"></span></li>
+            <li>Name: <span th:utext="${product.name}"></span></li>
+            <li>Price: <span th:utext="${#numbers.formatDecimal(product.price,3,2,'COMMA')}"></span></li>
+            <li>
+                <a th:href="@{|/buyProduct?id=${product.id}|}">Buy Now</a>
+            </li>
+
+            <th:block sec:authorize="hasAuthority('ROLE_MANAGER')">
+                <li>
+                    <a style="color:red;"
+                       th:href="@{/admin/editProduct(id = ${product.id})}">Edit Product</a>
+                </li>
+            </th:block>
+            <th:block sec:authorize="hasAuthority('ROLE_MANAGER')">
+                <li>
+                    <a style="color:red;"
+                       th:href="@{/admin/deleteProduct(id = ${product.id})}">Delete Product</a>
+                </li>
+            </th:block>
+        </ul>
+    </div>
+
+    <br/>
+    <div class="page-navigator" th:if="${totalPages > 1}">
+        Total Items: [[${totalItems}]]
+        &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+
+        <a class="nav-item" th:if="${currentPage > 1}" th:href="@{'/productList/1' + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">First</a>
+        <span class="nav-item" th:unless="${currentPage > 1}">First</span>
+        &nbsp;&nbsp;
+
+        <a class="nav-item" th:if="${currentPage > 1}" th:href="@{'/productList/' + ${currentPage - 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Previous</a>
+        <span class="nav-item" th:unless="${currentPage > 1}">Previous</span>
+
+        &nbsp;&nbsp;
+
+        <span class="nav-item" th:each="i: ${#numbers.sequence(1, totalPages)}">
+			<a class="nav-item" th:if="${currentPage != i}" th:href="@{'/productList/' + ${i} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
+			<span class="nav-item" th:unless="${currentPage != i}">[[${i}]]</span>
+			&nbsp;
+		</span>
+
+        <a class="nav-item" th:if="${currentPage < totalPages}" th:href="@{'/productList/' + ${currentPage + 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
+        <span class="nav-item" th:unless="${currentPage < totalPages}">Next</span>
+        &nbsp;&nbsp;
+
+        <a class="nav-item" th:if="${currentPage < totalPages}" th:href="@{'/productList/' + ${totalPages} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
+        <span class="nav-item" th:unless="${currentPage < totalPages}">Last</span>
+    </div>
 </div>
-
-
 </body>
 </html>

@@ -71,10 +71,9 @@ public class AdminController {
     }
 
     @PostMapping("/admin/editProduct")
-    public String productSave(Model model,
+    public String saveProduct(Model model,
                               @ModelAttribute("productForm") @Validated ProductForm productForm,
-                              BindingResult result,
-                              final RedirectAttributes redirectAttributes) {
+                              BindingResult result) {
 
         if (result.hasErrors()) {
             return "product";
@@ -90,8 +89,33 @@ public class AdminController {
         return "redirect:/productList";
     }
 
+    @GetMapping("/admin/createProduct")
+    public String createProduct(Model model) {
+        ProductForm productForm = new ProductForm();
+        model.addAttribute("productForm", productForm);
+        return "createProduct";
+    }
+
+    @PostMapping("/admin/createProduct")
+    public String createProduct(Model model,
+                              @ModelAttribute("productForm") ProductForm productForm,
+                              BindingResult result) {
+        if (result.hasErrors()) {
+            return "createProduct";
+        }
+        try {
+        productService.saveProductForm(productForm);
+        } catch (Exception e) {
+            Throwable rootCause = ExceptionUtils.getRootCause(e);
+            String message = rootCause.getMessage();
+            model.addAttribute("errorMessage", message);
+            return "createProduct";
+        }
+        return "redirect:/productList";
+    }
+
     @GetMapping("/admin/deleteProduct")
-    public String deleteProduct( @RequestParam("id") Long id){
+    public String deleteProduct( @RequestParam("id") Long id) {
         productService.delete(id);
         return "redirect:/productList";
     }

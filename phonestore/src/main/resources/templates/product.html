@@ -46,18 +46,18 @@
                 <span class="error-message" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">..</span>
             </td>
         </tr>
-<!--        <tr>-->
-<!--            <td>Image</td>-->
-<!--            <td>-->
-<!--                <img th:src="@{|/productImage?code=${productForm.id}|}" width="100"/>-->
-<!--            </td>-->
-<!--            <td> </td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--            <td>Upload Image</td>-->
-<!--            <td><input type="file" th:field="*{fileData}" /></td>-->
-<!--            <td> </td>-->
-<!--        </tr>-->
+        <tr>
+            <td>Image</td>
+            <td>
+                <img th:src="@{|/productImage?id=${productForm.id}|}" width="100"/>
+            </td>
+            <td> </td>
+        </tr>
+        <tr>
+            <td>Upload Image</td>
+            <td><input type="file" th:field="*{fileData}" /></td>
+            <td> </td>
+        </tr>
         <tr>
             <td>&nbsp;</td>
             <td>

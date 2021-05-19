@@ -26,8 +26,8 @@ public class MainController {
     }
 
     @GetMapping("/")
-    public String home() {
-        return "index";
+    public String home(Model model) {
+        return "redirect:/productList/1?sortField=id&sortDir=asc";
     }
 
     @GetMapping("/productList")
@@ -54,6 +54,6 @@ public class MainController {
         model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
 
         model.addAttribute("listProducts", listProducts);
-        return "productList";
+        return "index";
     }
 }
