@@ -27,6 +27,9 @@
                 <a th:href="@{'/productList/' + ${currentPage} + '?sortField=name&sortDir=' + ${reverseSortDir}}">Name</a>
             </th>
             <th>
+                <a th:href="@{'/productList/' + ${currentPage} + '?sortField=price&sortDir=' + ${reverseSortDir}}">Brand</a>
+            </th>
+            <th>
                 <a th:href="@{'/productList/' + ${currentPage} + '?sortField=price&sortDir=' + ${reverseSortDir}}">Price</a>
             </th>
             <th>Image</th>
@@ -37,9 +40,12 @@
         <tr th:each="product : ${listProducts}">
             <td style=" text-align: center;" th:text="${product.id}">Product ID</td>
             <td th:text="${product.name}">Name</td>
+            <td th:text="${product.brand}">Brand</td>
             <td th:text="${product.price}">Price</td>
             <td><img class="product-image"
-                     th:src="@{|/productImage?id=${product.id}|}" /></td>
+                     th:src="@{|/productImage?id=${product.id}|}" />
+            </td>
+
             <td>
                 <th:block sec:authorize="hasAuthority('ROLE_MANAGER')">
                 <a  th:href="@{/admin/editProduct(id = ${product.id})}">Edit</a>
@@ -119,7 +125,6 @@
 
         <a class="nav-item" th:if="${currentPage > 1}" th:href="@{'/productList/' + ${currentPage - 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Previous</a>
         <span class="nav-item" th:unless="${currentPage > 1}">Previous</span>
-
         &nbsp;&nbsp;
 
         <span class="nav-item" th:each="i: ${#numbers.sequence(1, totalPages)}">

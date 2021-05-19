@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -42,10 +43,22 @@ public class ProductService {
 
     public Product saveProductForm(ProductForm productForm) {
         Product product = findProductById(productForm.getId());
-        if(product==null){product = new Product();};
+        if(product == null){product = new Product();};
         product.setId(productForm.getId());
         product.setName(productForm.getName());
+        product.setBrand(productForm.getBrand());
         product.setPrice(productForm.getPrice());
+
+        if (productForm.getFileData() != null) {
+            byte[] image = null;
+            try {
+                image = productForm.getFileData().getBytes();
+            } catch (IOException e) {
+            }
+            if (image != null && image.length > 0) {
+                product.setImage(image);
+            }
+        }
         return productDAO.save(product);
     }
 

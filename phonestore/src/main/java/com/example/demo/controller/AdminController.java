@@ -63,6 +63,7 @@ public class AdminController {
         Product product = productService.findProductById(id);
         productForm.setId(product.getId());
         productForm.setName(product.getName());
+        productForm.setBrand(product.getBrand());
         productForm.setPrice(product.getPrice());
         model.addAttribute("productForm", productForm);
         System.out.println(product);

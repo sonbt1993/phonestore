@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductForm {
     private Long id;
     private String name;
+    private String brand;
     private double price;
     private MultipartFile fileData;
     private boolean newProduct = false;
@@ -19,6 +20,7 @@ public class ProductForm {
     public ProductForm(Product product) {
         this.id = product.getId();
         this.name = product.getName();
+        this.brand = product.getBrand();
         this.price = product.getPrice();
     }
 

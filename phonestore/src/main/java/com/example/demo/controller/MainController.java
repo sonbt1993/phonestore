@@ -1,17 +1,20 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Product;
+import com.example.demo.form.ProductForm;
 import com.example.demo.service.ProductService;
+import com.example.demo.validator.ProductFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -19,6 +22,22 @@ public class MainController {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    private ProductFormValidator productFormValidator;
+
+    @InitBinder
+    public void myInitBinder(WebDataBinder dataBinder) {
+        Object o = dataBinder.getTarget();
+        if (o == null) {
+            return;
+        }
+        System.out.println("Target=" + o);
+
+        if (o.getClass() == ProductForm.class) {
+            dataBinder.setValidator(productFormValidator);
+        }
+    }
 
     @RequestMapping("/403")
     public String accessDenied() {
@@ -55,5 +74,19 @@ public class MainController {
 
         model.addAttribute("listProducts", listProducts);
         return "index";
+    }
+
+    @GetMapping("/productImage" )
+    public void productImage(HttpServletRequest request, HttpServletResponse response, Model model,
+                             @RequestParam("id") Long id) throws IOException {
+        Product product = null;
+        if (id != null) {
+            product = this.productService.findProductById(id);
+        }
+        if (product != null && product.getImage() != null) {
+            response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
+            response.getOutputStream().write(product.getImage());
+        }
+        response.getOutputStream().close();
     }
 }

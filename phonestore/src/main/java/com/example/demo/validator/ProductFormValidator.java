@@ -21,10 +21,9 @@ public class ProductFormValidator implements Validator {
 
     @Override
     public void validate(Object o, Errors errors) {
-//        ProductForm productForm = (ProductForm) o;
+        ProductForm productForm = (ProductForm) o;
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "NotEmpty.productForm.name");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "price", "NotEmpty.productForm.price");
-
-
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "brand", "NotEmpty.productForm.brand");
     }
 }

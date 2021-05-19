@@ -17,14 +17,19 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 300)
+    @Column(name = "Name", nullable = false, length = 300)
     private String name;
 
     @Column(name = "Price")
     private double price;
 
-    @Column(name = "Image", nullable = true)
-    private String image;
+    @Column(name = "Brand", nullable = false, length = 300)
+    private String brand;
+
+    @Lob
+    @Column(name = "Image", length = Integer.MAX_VALUE, nullable = true)
+    private byte[] image;
+
 
 
 }
