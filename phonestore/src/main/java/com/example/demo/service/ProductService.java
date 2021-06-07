@@ -25,7 +25,7 @@ public class ProductService {
 
     public Page<Product> listAll(int pageNum, String sortField, String sortDir) {
 
-        Pageable pageable = PageRequest.of(pageNum - 1, 5,
+        Pageable pageable = PageRequest.of(pageNum - 1, 4,
                 sortDir.equals("asc") ? Sort.by(sortField).ascending()
                         : Sort.by(sortField).descending()
         );

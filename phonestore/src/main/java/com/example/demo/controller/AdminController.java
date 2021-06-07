@@ -28,13 +28,13 @@ public class AdminController {
 
     @InitBinder
     public void myInitBinder(WebDataBinder dataBinder) {
-        Object o = dataBinder.getTarget();
-        if (o == null) {
+        Object target = dataBinder.getTarget();
+        if (target == null) {
             return;
         }
-        System.out.println("Target=" + o);
+        System.out.println("Target=" + target);
 
-        if (o.getClass() == ProductForm.class) {
+        if (target.getClass() == ProductForm.class) {
             dataBinder.setValidator(productFormValidator);
         }
     }

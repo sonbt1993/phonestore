@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+</head>
+<body>
+<th:block th:include="/_header"></th:block>
+<th:block th:include="/_menu"></th:block>
+
+<div class="page-title">My Cart</div>
+
+<th:block th:if="${cartForm == null || cartForm.cartItems == null || cartForm.cartItems.empty}">
+    <h2>There is no items in Cart</h2>
+    <a th:href="@{/productList}">Show Product List</a>
+</th:block>
+
+<th:block th:if="${cartForm != null && cartForm.cartItems != null && !cartForm.cartItems.empty}">
+    <form method="POST" th:object="${cartForm}" th:action="@{/shoppingCart}">
+
+        <div class="product-preview-container"
+             th:each="cartItemInfo, varStatus : ${cartForm.cartItems}">
+            <ul>
+                <li><img class="product-image"
+                         th:src="@{|/productImage?id=${cartItemInfo.productInfo.id}|}" />
+                </li>
+                <li>Code: <span th:utext="${cartItemInfo.productInfo.id}"></span>
+                    <input type="hidden"
+                           th:name="|cartItems[${varStatus.index}].productInfo.id|"
+                           th:value="${cartItemInfo.productInfo.id}" />
+                </li>
+                <li>Name: <span th:utext="${cartItemInfo.productInfo.name}"></span></li>
+                <li>Price:
+                    <span class="price"
+                          th:utext="${#numbers.formatDecimal(cartItemInfo.productInfo.price,3,'COMMA',0,'POINT')}">
+                        </span>
+                </li>
+                <li>Quantity:
+                    <input
+                            th:name="|cartItems[${varStatus.index}].quantity|"
+                            th:value="${cartItemInfo.quantity}" />
+                </li>
+                <li>Subtotal:
+                    <span class="subtotal"
+                          th:utext="${#numbers.formatDecimal(cartItemInfo.amount,0,0,'COMMA')}">
+                        </span>
+                </li>
+                <li>
+                    <a th:href="@{|/shoppingCartRemoveProduct?code=${cartItemInfo.productInfo.id}|}">
+                        Delete
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div style="clear: both"></div>
+        <input class="button-update-sc" type="submit" value="Update Quantity" />
+        <a class="navi-item"
+           th:href="@{/shoppingCartCustomer}">Enter Customer Info</a>
+        <a class="navi-item"
+           th:href="@{/productList}">Continue Buy</a>
+    </form>
+</th:block>
+
+</body>
+</html>

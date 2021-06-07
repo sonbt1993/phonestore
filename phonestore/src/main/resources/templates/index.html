@@ -41,7 +41,7 @@
             <td style=" text-align: center;" th:text="${product.id}">Product ID</td>
             <td th:text="${product.name}">Name</td>
             <td th:text="${product.brand}">Brand</td>
-            <td th:text="${product.price}">Price</td>
+            <td th:text="${#numbers.formatDecimal(product.price, 3, 'COMMA', 0, 'POINT')}">Price</td>
             <td><img class="product-image"
                      th:src="@{|/productImage?id=${product.id}|}" />
             </td>
@@ -86,60 +86,6 @@
         <span class="nav-item" th:unless="${currentPage < totalPages}">Last</span>
     </div>
 
-    <div class="page-title">Product List</div>
-
-    <div class="product-preview-container" th:each="product : ${listProducts}">
-        <ul>
-            <li><img class="product-image"
-                     th:src="@{|/productImage?id=${product.id}|}" /></li>
-            <li>Id: <span th:utext="${product.id}"></span></li>
-            <li>Name: <span th:utext="${product.name}"></span></li>
-            <li>Price: <span th:utext="${#numbers.formatDecimal(product.price,3,2,'COMMA')}"></span></li>
-            <li>
-                <a th:href="@{|/buyProduct?id=${product.id}|}">Buy Now</a>
-            </li>
-
-            <th:block sec:authorize="hasAuthority('ROLE_MANAGER')">
-                <li>
-                    <a style="color:red;"
-                       th:href="@{/admin/editProduct(id = ${product.id})}">Edit Product</a>
-                </li>
-            </th:block>
-            <th:block sec:authorize="hasAuthority('ROLE_MANAGER')">
-                <li>
-                    <a style="color:red;"
-                       th:href="@{/admin/deleteProduct(id = ${product.id})}">Delete Product</a>
-                </li>
-            </th:block>
-        </ul>
-    </div>
-
-    <br/>
-    <div class="page-navigator" th:if="${totalPages > 1}">
-        Total Items: [[${totalItems}]]
-        &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-
-        <a class="nav-item" th:if="${currentPage > 1}" th:href="@{'/productList/1' + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">First</a>
-        <span class="nav-item" th:unless="${currentPage > 1}">First</span>
-        &nbsp;&nbsp;
-
-        <a class="nav-item" th:if="${currentPage > 1}" th:href="@{'/productList/' + ${currentPage - 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Previous</a>
-        <span class="nav-item" th:unless="${currentPage > 1}">Previous</span>
-        &nbsp;&nbsp;
-
-        <span class="nav-item" th:each="i: ${#numbers.sequence(1, totalPages)}">
-			<a class="nav-item" th:if="${currentPage != i}" th:href="@{'/productList/' + ${i} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
-			<span class="nav-item" th:unless="${currentPage != i}">[[${i}]]</span>
-			&nbsp;
-		</span>
-
-        <a class="nav-item" th:if="${currentPage < totalPages}" th:href="@{'/productList/' + ${currentPage + 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
-        <span class="nav-item" th:unless="${currentPage < totalPages}">Next</span>
-        &nbsp;&nbsp;
-
-        <a class="nav-item" th:if="${currentPage < totalPages}" th:href="@{'/productList/' + ${totalPages} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
-        <span class="nav-item" th:unless="${currentPage < totalPages}">Last</span>
-    </div>
 </div>
 </body>
 </html>

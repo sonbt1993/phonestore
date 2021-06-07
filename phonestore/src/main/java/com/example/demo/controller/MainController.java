@@ -1,13 +1,18 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Product;
+import com.example.demo.form.CustomerForm;
 import com.example.demo.form.ProductForm;
+import com.example.demo.model.CartInfo;
+import com.example.demo.model.ProductInfo;
 import com.example.demo.service.ProductService;
+import com.example.demo.ultils.Utils;
+import com.example.demo.validator.CustomerFormValidator;
 import com.example.demo.validator.ProductFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-
+@Transactional
 @Controller
 public class MainController {
 
@@ -26,16 +31,24 @@ public class MainController {
     @Autowired
     private ProductFormValidator productFormValidator;
 
+    @Autowired
+    private CustomerFormValidator customerFormValidator;
+
+
     @InitBinder
     public void myInitBinder(WebDataBinder dataBinder) {
-        Object o = dataBinder.getTarget();
-        if (o == null) {
+        Object target = dataBinder.getTarget();
+        if (target == null) {
             return;
         }
-        System.out.println("Target=" + o);
+        System.out.println("Target=" + target);
 
-        if (o.getClass() == ProductForm.class) {
+        if (target.getClass() == ProductForm.class) {
             dataBinder.setValidator(productFormValidator);
+        }
+
+        else if (target.getClass() == CustomerForm.class) {
+            dataBinder.setValidator(customerFormValidator);
         }
     }
 
@@ -80,13 +93,79 @@ public class MainController {
     public void productImage(HttpServletRequest request, HttpServletResponse response, Model model,
                              @RequestParam("id") Long id) throws IOException {
         Product product = null;
+
         if (id != null) {
             product = this.productService.findProductById(id);
         }
+
         if (product != null && product.getImage() != null) {
             response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
             response.getOutputStream().write(product.getImage());
         }
+
         response.getOutputStream().close();
     }
+
+    @GetMapping("/shoppingCart")
+    public String shoppingCartHandler(HttpServletRequest request, Model model) {
+        CartInfo myCart = Utils.getCartInSession(request);
+
+        model.addAttribute("cartForm", myCart);
+        return "shoppingCart";
+    }
+
+    @GetMapping( "/buyProduct" )
+    public String listProductHandler(HttpServletRequest request, Model model, //
+                                     @RequestParam(value = "id", defaultValue = "") Long id) {
+
+        Product product = null;
+        if (id != null) {
+            product = productService.findProductById(id);
+        }
+
+        if (product != null) {
+            CartInfo cartInfo = Utils.getCartInSession(request);
+
+            ProductInfo productInfo = new ProductInfo(product);
+
+            cartInfo.addProduct(productInfo, 1);
+        }
+
+        return "redirect:/shoppingCart";
+    }
+
+    @GetMapping( "/shoppingCartRemoveProduct" )
+    public String removeProductHandler(HttpServletRequest request, Model model, //
+                                       @RequestParam(value = "id", defaultValue = "") Long id) {
+        Product product = null;
+        if (id != null) {
+            product = productService.findProductById(id);
+        }
+
+        if (product != null) {
+            CartInfo cartInfo = Utils.getCartInSession(request);
+
+            ProductInfo productInfo = new ProductInfo(product);
+
+            cartInfo.removeProduct(productInfo);
+        }
+
+        return "redirect:/shoppingCart";
+    }
+
+
+    @PostMapping("/shoppingCart" )
+    public String shoppingCartUpdateQty(HttpServletRequest request, //
+                                        Model model, //
+                                        @ModelAttribute("cartForm") CartInfo cartForm) {
+
+        CartInfo cartInfo = Utils.getCartInSession(request);
+        cartInfo.updateQuantity(cartForm);
+
+        return "redirect:/shoppingCart";
+    }
+
+
+
+
 }
